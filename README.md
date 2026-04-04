@@ -1,3 +1,9 @@
+title: AI Security OpenEnv
+emoji: 🛡️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+
 # AI Security Policy Enforcement & Firewall Optimization
 
 An OpenEnv environment for evaluating AI agents on cybersecurity threat detection, policy enforcement, and firewall rule generation.
