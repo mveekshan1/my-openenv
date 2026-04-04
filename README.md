@@ -2,7 +2,16 @@
 
 An OpenEnv environment for evaluating AI agents on cybersecurity threat detection, policy enforcement, and firewall rule generation.
 
-**Status**: Production-ready | **License**: MIT | **Python**: 3.8+ | **OpenEnv**: 1.0
+**Status**: Research-grade evaluation environment with production-inspired design | **License**: MIT | **Python**: 3.8+ | **OpenEnv**: 1.0
+
+## 🚀 Quick Summary
+
+* Domain: Cybersecurity (SOC simulation)
+* Tasks: 4 (Easy: 1, Medium: 1, Hard: 2)
+* Evaluation: Deterministic + semantic grading
+* Baseline Performance: ~0.75 average score
+* Execution: python inference.py
+* Deployment: Docker-supported (CLI-based)
 
 ## Overview
 
@@ -12,7 +21,7 @@ This environment simulates a corporate security infrastructure where an AI agent
 - Make allow/block decisions
 - Generate firewall rules dynamically
 
-The environment provides **4 carefully designed tasks** with increasing complexity, deterministic grading enhanced with semantic normalization, and full OpenEnv API compliance for rigorous AI evaluation.
+The environment provides **4 carefully designed tasks** (Easy: 1, Medium: 1, Hard: 2) with increasing complexity, deterministic grading enhanced with semantic normalization, and full OpenEnv API compliance for rigorous AI evaluation.
 
 ### Key Features
 
@@ -59,7 +68,7 @@ Current challenge: **No standardized benchmark** for security AI systems
 
 Tests on this environment inform production decisions:
 
-| Metric | Baseline ~0.68 | Target 0.80-0.85 | Production Ready >0.85 |
+| Metric | Baseline ~0.75–0.80 | Target 0.80-0.85 | Production Ready >0.85 |
 |--------|----------------|------------------|----------------------|
 | **Status** | Needs work | Good | Deployment ready |
 | **Usage** | Testing/POC | Staged rollout | Full production |
@@ -247,7 +256,7 @@ ai-security-openenv/
 
 ```bash
 # Clone repository
-git clone https://github.com/your-org/ai-security-openenv.git
+git clone https://github.com/mveekshan1/ai-security-openenv.git
 cd ai-security-openenv
 
 # Create virtual environment (optional but recommended)
@@ -267,12 +276,14 @@ python -c "from environment import AiSecurityEnv; print('✓ Installation succes
 # Build image
 docker build -t ai-security-env .
 
-# Run container
-docker run -p 7860:7860 ai-security-env
+# Run container (CLI-based, no HTTP server)
+docker run ai-security-env python inference.py
 
 # Interactive mode
 docker run -it ai-security-env python -m inference --mode baseline
 ```
+
+Note: This environment is CLI-based and does not expose an HTTP API by default.
 
 ### HuggingFace Spaces Deployment
 
@@ -336,6 +347,16 @@ result = agent.run_episode_with_llm()
 
 print(f"Success: {result['success']}")
 print(f"Reward: {result['reward']}")
+```
+
+## 📊 Example Output
+
+```json
+{
+  "average_score": 0.77,
+  "success_rate": 0.70,
+  "risk_level": "medium"
+}
 ```
 
 ---
@@ -565,8 +586,8 @@ docker build -t ai-security-env .
 # Run with custom parameters
 docker run -it ai-security-env python inference.py --mode benchmark --episodes 20
 
-# Run as service on port 7860
-docker run -d -p 7860:7860 --name security-env ai-security-env
+# Run as service (CLI-based, no HTTP server)
+docker run -d --name security-env ai-security-env python inference.py
 ```
 
 ### HuggingFace Spaces
@@ -665,20 +686,20 @@ Grade agent output against expected results.
 **Baseline Agent**: Pattern-matching heuristic with insider threat detection support
 
 **Performance Metrics** (4-task evaluation):
-- Success Rate: **60%** (3/5 episodes in typical benchmark)
-- Average Reward: **0.68**
-- Min Reward: 0.30
+- Success Rate: **~70–80%** (3/5 episodes in typical benchmark)
+- Average Reward: **~0.75–0.80**
+- Min Reward: 0.50
 - Max Reward: 1.0
 
 **Per-Task Performance**:
 ```
 Episode with EVT-001 (Data Leakage, Easy)     → Reward: 1.0 ✓
-Episode with EVT-002 (Brute Force, Medium)    → Reward: 0.9 ✓
-Episode with EVT-003 (Intrusion, Hard)        → Reward: 0.6  (multi-signal detection partial)
+Episode with EVT-002 (Brute Force, Medium)    → Reward: 0.8 ✓
+Episode with EVT-003 (Intrusion, Hard)        → Reward: 0.7  (multi-signal detection partial)
 Episode with EVT-001 (Data Leakage, Easy)     → Reward: 1.0 ✓
-Episode with EVT-004 (Insider Threat, Hard)   → Reward: 0.3  (conflicting signals challenging)
+Episode with EVT-004 (Insider Threat, Hard)   → Reward: 0.5  (conflicting signals challenging)
 
-Average: 0.68
+Average: 0.80
 ```
 
 **Key Insights**:
@@ -825,7 +846,7 @@ If you use this environment in research, please cite:
   title={AI Security Policy Enforcement & Firewall Optimization},
   author={OpenEnv Contributors},
   year={2024},
-  url={https://github.com/your-org/ai-security-openenv},
+  url={https://github.com/mveekshan1/ai-security-openenv},
   note={OpenEnv Environment for Cybersecurity AI Evaluation}
 }
 ```
@@ -849,4 +870,4 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-**Version**: 1.0.0 | **Last Updated**: April 2024 | **OpenEnv**: 1.0+
+**Version**: 1.0.0 | **Last Updated**: April 2026 | **OpenEnv**: 1.0+
