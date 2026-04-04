@@ -1,12 +1,11 @@
-from inference import run_benchmark
+import subprocess
 import time
 
 print("Starting AI Security OpenEnv...")
 
-result = run_benchmark()
-print(result)
+subprocess.run(["python", "inference.py"])
 
-# Keep container alive
+# keep container alive
 
 while True:
     time.sleep(60)
