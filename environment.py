@@ -172,23 +172,14 @@ class AiSecurityEnv:
             info: Additional info (grading details)
         """
         self.step_count += 1
-        
-        # Validate action format
-        if not isinstance(action, dict):
-            return (
-                self._get_state(),
-                -0.2,
-                True,
-                {"error": "Invalid action format", "grade": {"score": -0.2}}
-            )
 
         # Execute grading
-        grade = self._grade_action(action)
-        reward = grade["reward"]
-        done = (reward == 1.0) or (self.step_count >= self.max_steps)
+        grade: Dict[str, Any] = self._grade_action(action)
+        reward: float = grade["reward"]
+        done: bool = (reward == 1.0) or (self.step_count >= self.max_steps)
 
-        observation = self._get_state()
-        info = {
+        observation: Dict[str, Any] = self._get_state()
+        info: Dict[str, Any] = {
             "grade": grade,
             "step": self.step_count,
             "done": done
@@ -209,11 +200,11 @@ class AiSecurityEnv:
             return {"score": 0.0, "reward": 0.0, "details": {}}
 
         # Get expected output for current scenario
-        scenario = self._find_current_scenario()
+        scenario: Optional[Dict[str, Any]] = self._find_current_scenario()
         if scenario is None:
             return {"score": 0.0, "reward": 0.0, "details": {}}
 
-        expected = scenario["expected"]
+        expected: Dict[str, Any] = scenario["expected"]
         details = {}
         total_score = 0.0
 
@@ -245,10 +236,10 @@ class AiSecurityEnv:
         total_score += response_score * 0.2
 
         # Grade "firewall_rule" field (0.2 weight)
-        firewall_score = 0.0
+        firewall_score: float = 0.0
         if "firewall_rule" in expected:
-            expected_rule = expected["firewall_rule"]
-            actual_rule = action.get("firewall_rule", {})
+            expected_rule: Any = expected["firewall_rule"]
+            actual_rule: Any = action.get("firewall_rule", {})
             if (
                 isinstance(actual_rule, dict) and
                 actual_rule.get("rule_action") == expected_rule.get("rule_action") and
@@ -304,11 +295,15 @@ def validate_openenv_api():
     assert "event_id" in state, "state missing event_id"
     
     # Test step
-    action = {
+    action: Dict[str, Any] = {
         "allow": False,
         "threat_type": "data_exfiltration",
         "response_action": "block"
     }
+    obs: Dict[str, Any]
+    reward: float
+    done: bool
+    info: Dict[str, Any]
     obs, reward, done, info = env.step(action)
     assert isinstance(obs, dict), "observation should be dict"
     assert isinstance(reward, float), "reward should be float"
