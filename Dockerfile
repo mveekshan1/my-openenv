@@ -16,6 +16,7 @@ COPY inference.py .
 COPY openenv.yaml .
 COPY README.md .
 COPY server.py .
+COPY app.py .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt

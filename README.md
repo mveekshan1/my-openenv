@@ -299,7 +299,7 @@ ai-security-openenv/
 ├── tasks.py                 # Task definitions and grading engine
 ├── inference.py             # Baseline agent and evaluation utilities
 ├── app.py                   # Gradio interface for dashboard
-├── server.py                # Flask server for API testing
+├── server.py                # FastAPI server for API testing
 ├── openenv.yaml             # Configuration and metadata
 ├── Dockerfile               # Container configuration
 ├── requirements.txt         # Python dependencies
@@ -337,11 +337,11 @@ python -c "from environment import AiSecurityEnv; print('Installation successful
 # Build image
 docker build -t ai-security-openenv .
 
-# Run evaluation
+# Run baseline inference
 docker run ai-security-openenv python inference.py
 
-# Run with custom parameters
-docker run ai-security-openenv python inference.py --mode benchmark --episodes 10
+# Run the server container
+docker run -p 8000:8000 ai-security-openenv
 ```
 
 ---
