@@ -1,74 +1,57 @@
 """
-Simple Flask server for testing OpenEnv API compliance.
+Simple FastAPI server for testing OpenEnv API compliance.
 """
-from flask import Flask, jsonify, request
+from fastapi import FastAPI, Request
+from typing import Dict, Any
 from environment import AiSecurityEnv
 
-app = Flask(__name__)
+app = FastAPI()
 
 # Global environment instance
 env = AiSecurityEnv(seed=42)
 
-@app.route('/reset', methods=['POST'])
-def reset():
+@app.post("/reset")
+async def reset() -> Dict[str, Any]:
     """Reset the environment and return initial state."""
     try:
         state = env.reset()
-        return jsonify(state)
+        return state
     except Exception as e:
-        return jsonify({
-            "status": "error",
-            "message": str(e)
-        }), 500
+        return {"status": "error", "message": str(e)}
 
-@app.route('/step', methods=['POST'])
-def step():
+@app.post("/step")
+async def step(request: Request) -> Dict[str, Any]:
     """Execute a step in the environment."""
     try:
-        data = request.get_json()
-        if not data or 'action' not in data:
-            return jsonify({
-                "status": "error",
-                "message": "Missing 'action' in request body"
-            }), 400
-
-        action = data['action']
+        body = await request.json()
+        action = body.get("action", {})
         observation, reward, done, info = env.step(action)
-
-        return jsonify({
+        return {
             "observation": observation,
             "reward": reward,
             "done": done,
             "info": info
-        })
+        }
     except Exception as e:
-        return jsonify({
-            "status": "error",
-            "message": str(e)
-        }), 500
+        return {"status": "error", "message": str(e)}
 
-@app.route('/state', methods=['GET'])
-def get_state():
-    """Get current state."""
+@app.get("/state")
+async def get_state() -> Dict[str, Any]:
+    """Get current environment state."""
     try:
         state = env.state()
-        return jsonify({
-            "status": "success",
-            "state": state
-        })
+        return state
     except Exception as e:
-        return jsonify({
-            "status": "error",
-            "message": str(e)
-        }), 500
+        return {"status": "error", "message": str(e)}
 
-@app.route('/health', methods=['GET'])
-def health():
+@app.get("/health")
+async def health() -> Dict[str, str]:
     """Health check endpoint."""
-    return jsonify({
-        "status": "healthy",
-        "environment": "ai-security-openenv"
-    })
+    return {
+        "environment": "ai-security-openenv",
+        "status": "healthy"
+    }
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
