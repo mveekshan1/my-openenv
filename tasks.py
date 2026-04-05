@@ -8,9 +8,6 @@ from typing import Any, Dict, List, Optional
 from enum import Enum
 
 
-import re
-
-
 # =============================================================================
 # GRADING ROBUSTNESS: Semantic Normalization
 # =============================================================================
@@ -232,8 +229,8 @@ class GradingEngine:
         total_score: float = 0.0
 
         # Grade "allow" field (strict boolean match)
-        expected_allow = task.expected_output.get("allow")
-        actual_allow = agent_output.get("allow")
+        expected_allow: bool = task.expected_output.get("allow", False)
+        actual_allow: Optional[bool] = agent_output.get("allow")
         allow_match = expected_allow == actual_allow
         allow_score = 1.0 if allow_match else 0.0
         details["allow"] = {
@@ -245,8 +242,8 @@ class GradingEngine:
         total_score += allow_score * GradingEngine.WEIGHTS["allow"]
 
         # Grade "threat_type" field (with semantic normalization)
-        expected_threat = task.expected_output.get("threat_type")
-        actual_threat = agent_output.get("threat_type")
+        expected_threat: str = task.expected_output.get("threat_type", "")
+        actual_threat: Optional[str] = agent_output.get("threat_type")
         threat_match = GradingEngine._match_with_normalization(actual_threat, expected_threat)
         threat_score = 1.0 if threat_match else 0.0
         details["threat_type"] = {
@@ -258,8 +255,8 @@ class GradingEngine:
         total_score += threat_score * GradingEngine.WEIGHTS["threat_type"]
 
         # Grade "response_action" field (with semantic normalization)
-        expected_action = task.expected_output.get("response_action")
-        actual_action = agent_output.get("response_action")
+        expected_action: str = task.expected_output.get("response_action", "")
+        actual_action: Optional[str] = agent_output.get("response_action")
         action_match = GradingEngine._match_with_normalization(actual_action, expected_action)
         action_score = 1.0 if action_match else 0.0
         details["response_action"] = {
@@ -271,9 +268,9 @@ class GradingEngine:
         total_score += action_score * GradingEngine.WEIGHTS["response_action"]
 
         # Grade "firewall_rule" field (strict match, only if expected)
-        expected_rule = task.expected_output.get("firewall_rule")
-        actual_rule = agent_output.get("firewall_rule")
-        rule_match = True
+        expected_rule: Optional[Dict[str, Any]] = task.expected_output.get("firewall_rule")
+        actual_rule: Optional[Dict[str, Any]] = agent_output.get("firewall_rule")
+        rule_match: bool = True
         
         if expected_rule is not None:
             if not isinstance(actual_rule, dict):
@@ -395,7 +392,7 @@ def test_grading():
     print(f"[PASS] Perfect match test passed: {result['score']}")
 
     # Partial match
-    output = {
+    output: Dict[str, Any] = {
         "allow": False,
         "threat_type": "brute_force",  # Wrong
         "response_action": "block"
@@ -406,7 +403,7 @@ def test_grading():
 
     # Semantic normalization test: "block_ip" vs "block ip"
     task_brute: TaskDefinition = TASKS["threat_detection_brute_force"]
-    output = {
+    output: Dict[str, Any] = {
         "allow": False,
         "threat_type": "brute_force",
         "response_action": "block ip",  # Semantically equivalent to "block_ip"
@@ -421,7 +418,7 @@ def test_grading():
     print(f"[PASS] Semantic normalization test passed: {result['score']}")
 
     # Complete mismatch
-    output = {
+    output: Dict[str, Any] = {
         "allow": True,  # Wrong
         "threat_type": "brute_force",  # Wrong for EVT-001
         "response_action": "allow",  # Wrong

@@ -292,7 +292,7 @@ class SecurityAgentBaseline:
         rewards: List[float] = []
         successes: int = 0
 
-        for i in range(num_episodes):
+        for _ in range(num_episodes):
             episode: Dict[str, Any] = self.run_episode()
             episodes.append(episode)
             reward: float = episode["reward"]
@@ -326,7 +326,7 @@ class LLMAgentAdapter:
     pass
 
 
-def run_benchmark(task_idx: int = None, num_episodes: int = 1) -> Dict[str, Any]:
+def run_benchmark(task_idx: Optional[int] = None, num_episodes: int = 1) -> Dict[str, Any]:
     """
     Run benchmark for selected task.
     
@@ -365,7 +365,7 @@ def main():
     
     try:
         # Run episodes
-        for episode_idx in range(args.episodes):
+        for _ in range(args.episodes):
             state: Dict[str, Any] = agent.env.reset()
             episode_steps: int = 0
             
