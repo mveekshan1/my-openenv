@@ -265,6 +265,13 @@ class AiSecurityEnv:
             raise RuntimeError("Environment not initialized. Call reset() first.")
         return self.current_event.to_dict()
 
+    def state(self) -> Dict[str, Any]:
+        """
+        Get current state.
+        OpenEnv API: state() -> Dict[str, Any]
+        """
+        return self._get_state()
+
     def step(self, action: Dict[str, Any]) -> Tuple[Dict[str, Any], float, bool, Dict[str, Any]]:
         """
         Execute one step in the environment.

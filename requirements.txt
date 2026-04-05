@@ -1,5 +1,6 @@
 # AI Security OpenEnv
 gradio
+flask
 
 # This project uses only Python standard library modules for core functionality:
 # - random, typing, dataclasses, enum, json, argparse, re
