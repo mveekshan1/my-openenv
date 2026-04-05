@@ -30,6 +30,59 @@ AI Security OpenEnv addresses this problem through:
 5. **Semantic Flexibility**: Accepts equivalent formatting while maintaining strict semantic requirements
 6. **Production Realism**: Security events mirror real SOC alerts with logs, anomalies, and context
 
+## Submission Readiness
+
+This repository is configured for OpenEnv validation and Docker-based deployment.
+
+- `server.py` is the OpenEnv API entrypoint. It exposes:
+  - `POST /reset` → returns `{"observation": {...}}`
+  - `POST /step` → returns `{"observation": {...}, "reward": ..., "done": ..., "info": {...}}`
+  - `GET /state` and `GET /health` for diagnostics
+- `Dockerfile` starts the validation server with `CMD ["python", "server.py"]`
+- `openenv.yaml` defines the environment package/class and API signatures used by validation
+
+### Environment Variables
+
+The inference script reads these variables:
+
+- `API_BASE_URL` (default: `https://api.openai.com/v1`)
+- `MODEL_NAME` (default: `gpt-4`)
+- `HF_TOKEN` (optional; no default string)
+- `LOCAL_IMAGE_NAME` (optional for `from_docker_image()` workflows)
+
+Only `API_BASE_URL` and `MODEL_NAME` are defaulted by design, in accordance with the OpenEnv checklist.
+
+### Run locally
+
+```bash
+python server.py
+```
+
+or using Docker:
+
+```bash
+docker build -t ai-security-openenv .
+docker run -p 8000:8000 ai-security-openenv
+```
+
+### Inference
+
+Run the evaluation driver with:
+
+```bash
+python inference.py
+```
+
+The inference script uses `openai.OpenAI` and prints structured logs in the required format:
+- `[START] ...`
+- `[STEP] ...`
+- `[END] ...`
+
+### Notes
+
+- `requirements.txt` includes `openai` and `openenv-core`
+- `server.py` is the correct API target for OpenEnv checks; `app.py` is a separate Gradio dashboard UI
+
 ## Environment Design
 
 ### State

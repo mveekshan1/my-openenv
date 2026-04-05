@@ -33,5 +33,6 @@ ENV OPENENV_ENV=production
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "from environment import AiSecurityEnv; env = AiSecurityEnv(); env.reset(); print('OK')" || exit 1
 
-# Default command: run the OpenEnv server for validation and HF Spaces deployment
+# Default command: run the OpenEnv API server for validation
+# The OpenEnv submission checks target server.py for /reset and /step endpoints.
 CMD ["python", "server.py"]
