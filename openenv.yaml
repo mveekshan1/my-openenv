@@ -1,0 +1,90 @@
+name: ai-security-openenv
+version: "1.0"
+description: "OpenEnv environment for AI cybersecurity threat detection and response"
+
+metadata:
+  author: "AI Security Team"
+  license: "MIT"
+  python: "3.8+"
+
+environment:
+  package: "environment"
+  class: "AiSecurityEnv"
+  
+api:
+  reset:
+    signature: "reset() -> Dict[str, Any]"
+    returns:
+      type: "observation"
+      description: "Initial state containing event information"
+  
+  step:
+    signature: "step(action: Dict[str, Any]) -> Tuple[Dict, float, bool, Dict]"
+    inputs:
+      - name: "action"
+        type: "Dict[str, Any]"
+        description: "Agent's security decision"
+        fields:
+          - name: "allow"
+            type: "bool"
+          - name: "threat_type"
+            type: "str"
+          - name: "response_action"
+            type: "str"
+          - name: "firewall_rule"
+            type: "Dict[str, str]"
+            optional: true
+    returns:
+      - name: "observation"
+        type: "Dict[str, Any]"
+      - name: "reward"
+        type: "float"
+        range: [0.0, 1.0]
+      - name: "done"
+        type: "bool"
+      - name: "info"
+        type: "Dict[str, Any]"
+
+tasks:
+  - id: "data_leakage_prevention"
+    name: "Data Leakage Prevention"
+    difficulty: "easy"
+    description: "Detect and prevent unauthorized data export"
+    event_id: "EVT-001"
+    expected_score: 1.0
+  
+  - id: "threat_detection"
+    name: "Threat Detection"
+    difficulty: "medium"
+    description: "Identify brute force attacks"
+    event_id: "EVT-002"
+    expected_score: 1.0
+  
+  - id: "advanced_threat_response"
+    name: "Advanced Threat Response"
+    difficulty: "hard"
+    description: "Detect multi-signal intrusion attempts"
+    event_id: "EVT-003"
+    expected_score: 1.0
+
+grading:
+  type: "deterministic"
+  method: "weighted_score"
+  criteria:
+    - name: "allow"
+      weight: 0.3
+    - name: "threat_type"
+      weight: 0.3
+    - name: "response_action"
+      weight: 0.2
+    - name: "firewall_rule"
+      weight: 0.2
+  
+  penalties:
+    step_penalty: 0.05
+    invalid_action: -0.2
+
+constraints:
+  max_steps: 10
+  deterministic: true
+  seeded: true

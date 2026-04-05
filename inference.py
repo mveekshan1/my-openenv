@@ -4,7 +4,6 @@ Includes evaluation summary and performance metrics.
 """
 
 import json
-import os
 from typing import Any, Dict, List, Optional
 from environment import AiSecurityEnv
 
@@ -345,21 +344,71 @@ def run_benchmark(task_idx: int = None, num_episodes: int = 1) -> Dict[str, Any]
 
 
 def main():
-    """Main execution (kept for CLI compatibility)"""
+    """Main execution with OpenEnv-compliant logging format"""
     import argparse
 
     parser = argparse.ArgumentParser(description="Run AI Security Agent Baseline")
-    parser.add_argument("--episodes", type=int, default=5, help="Number of episodes to run")
+    parser.add_argument("--episodes", type=int, default=1, help="Number of episodes to run")
+    parser.add_argument("--task", type=int, default=None, help="Task index (0/1/2) or None for random")
     args = parser.parse_args()
 
-    benchmark = run_benchmark(num_episodes=args.episodes)
+    task_id = args.task if args.task is not None else -1
+    task_names = ["data_leakage_prevention", "threat_detection", "advanced_threat_response"]
+    task_name = task_names[task_id] if 0 <= task_id < len(task_names) else "random"
     
-    summary = benchmark["evaluation_summary"]
-    print(f"Average Score: {summary['average_score']:.4f}")
-    print(f"Success Rate: {summary['success_rate']*100:.1f}%")
-    print(f"Risk Level: {summary['risk_level'].upper()}")
+    # Log START
+    print(f"[START] task={task_name} env=ai-security-openenv model=baseline", flush=True)
     
-    print(json.dumps(benchmark, indent=2, default=str))
+    agent = SecurityAgentBaseline()
+    all_rewards = []
+    total_steps = 0
+    success_count = 0
+    
+    try:
+        # Run episodes
+        for episode_idx in range(args.episodes):
+            state = agent.env.reset()
+            episode_steps = 0
+            episode_rewards = []
+            
+            while True:
+                episode_steps += 1
+                action = agent.decide(state)
+                observation, reward, done, info = agent.env.step(action)
+                episode_rewards.append(reward)
+                all_rewards.append(reward)
+                
+                # Log STEP
+                error = info.get("error") if "error" in info else None
+                print(
+                    f"[STEP] step={episode_steps} action={json.dumps(action)} "
+                    f"reward={reward:.4f} done={done} error={error}",
+                    flush=True
+                )
+                
+                if done:
+                    if reward >= 0.8:
+                        success_count += 1
+                    total_steps += episode_steps
+                    break
+                
+                state = observation
+        
+        # Calculate final metrics
+        avg_reward = sum(all_rewards) / len(all_rewards) if all_rewards else 0.0
+        min_reward = min(all_rewards) if all_rewards else 0.0
+        max_reward = max(all_rewards) if all_rewards else 0.0
+        
+        # Log END
+        print(
+            f"[END] success={success_count}/{args.episodes} steps={total_steps} "
+            f"score={avg_reward:.4f} rewards={json.dumps([round(r, 4) for r in all_rewards])}",
+            flush=True
+        )
+        
+    except Exception as e:
+        print(f"[ERROR] {type(e).__name__}: {str(e)}", flush=True)
+        raise
 
 
 if __name__ == "__main__":
