@@ -88,7 +88,7 @@ class EvaluationSummary:
     def _generate_recommendations(avg_score: float, success_rate: float,
                                   scores: List[float], risk_level: str) -> List[str]:
         """Generate actionable recommendations based on performance"""
-        recommendations = []
+        recommendations: List[str] = []
 
         if avg_score >= 0.85:
             recommendations.append("Agent demonstrates strong threat detection capability.")
@@ -182,12 +182,11 @@ class SecurityAgentBaseline:
                 "firewall_rule": {...}  # optional
             }
         """
-        logs = state.get("logs", [])
-        data_sensitivity = state.get("data_sensitivity", "low")
-        user_role = state.get("user_role", "unknown")
+        logs: List[str] = state.get("logs", [])
+        data_sensitivity: str = state.get("data_sensitivity", "low")
 
         # Convert to lowercase for matching
-        logs_text = " ".join(logs).lower()
+        logs_text: str = " ".join(logs).lower()
 
         # Detect data exfiltration
         if any(keyword in logs_text for keyword in ["exfiltrate", "export", "transfer", "2gb"]):
@@ -289,20 +288,20 @@ class SecurityAgentBaseline:
                 "episodes": [...]
             }
         """
-        episodes = []
-        rewards = []
-        successes = 0
+        episodes: List[Dict[str, Any]] = []
+        rewards: List[float] = []
+        successes: int = 0
 
         for i in range(num_episodes):
-            episode = self.run_episode()
+            episode: Dict[str, Any] = self.run_episode()
             episodes.append(episode)
-            reward = episode["reward"]
+            reward: float = episode["reward"]
             rewards.append(reward)
             if episode["success"]:
                 successes += 1
 
-        avg_reward = sum(rewards) / len(rewards) if rewards else 0.0
-        failed = num_episodes - successes
+        avg_reward: float = sum(rewards) / len(rewards) if rewards else 0.0
+        failed: int = num_episodes - successes
 
         # Compute evaluation summary
         eval_summary = EvaluationSummary.compute_summary(rewards, num_episodes)
@@ -352,34 +351,38 @@ def main():
     parser.add_argument("--task", type=int, default=None, help="Task index (0/1/2) or None for random")
     args = parser.parse_args()
 
-    task_id = args.task if args.task is not None else -1
-    task_names = ["data_leakage_prevention", "threat_detection", "advanced_threat_response"]
-    task_name = task_names[task_id] if 0 <= task_id < len(task_names) else "random"
+    task_id: int = args.task if args.task is not None else -1
+    task_names: List[str] = ["data_leakage_prevention", "threat_detection", "advanced_threat_response"]
+    task_name: str = task_names[task_id] if 0 <= task_id < len(task_names) else "random"
     
     # Log START
     print(f"[START] task={task_name} env=ai-security-openenv model=baseline", flush=True)
     
     agent = SecurityAgentBaseline()
-    all_rewards = []
-    total_steps = 0
-    final_success = False
+    all_rewards: List[float] = []
+    total_steps: int = 0
+    final_success: bool = False
     
     try:
         # Run episodes
         for episode_idx in range(args.episodes):
-            state = agent.env.reset()
-            episode_steps = 0
+            state: Dict[str, Any] = agent.env.reset()
+            episode_steps: int = 0
             
             while True:
                 episode_steps += 1
-                action = agent.decide(state)
+                action: Dict[str, Any] = agent.decide(state)
+                observation: Dict[str, Any]
+                reward: float
+                done: bool
+                info: Dict[str, Any]
                 observation, reward, done, info = agent.env.step(action)
                 all_rewards.append(reward)
                 
                 # Convert done and error to JSON-compliant format
-                done_str = "true" if done else "false"
-                error_val = info.get("error")
-                error_str = "null" if error_val is None else json.dumps(error_val)
+                done_str: str = "true" if done else "false"
+                error_val: Optional[Any] = info.get("error")
+                error_str: str = "null" if error_val is None else json.dumps(error_val)
                 
                 # Log STEP with exact format: [STEP] step=<n> action=<json> reward=<0.00> done=<true|false> error=<null|msg>
                 print(
@@ -397,9 +400,9 @@ def main():
                 state = observation
         
         # Calculate final metrics
-        avg_reward = sum(all_rewards) / len(all_rewards) if all_rewards else 0.0
-        success_str = "true" if final_success else "false"
-        rewards_list = ",".join([f"{r:.2f}" for r in all_rewards])
+        avg_reward: float = sum(all_rewards) / len(all_rewards) if all_rewards else 0.0
+        success_str: str = "true" if final_success else "false"
+        rewards_list: str = ",".join([f"{r:.2f}" for r in all_rewards])
         
         # Log END with exact format: [END] success=<true|false> steps=<n> score=<score> rewards=<r1,r2,...>
         print(

@@ -40,7 +40,7 @@ class SemanticNormalizer:
     }
 
     # Reverse mapping for normalization
-    _NORMALIZATION_MAP = {}
+    _NORMALIZATION_MAP: Dict[str, str] = {}
 
     @classmethod
     def _build_map(cls):
@@ -228,8 +228,8 @@ class GradingEngine:
                 "feedback": str
             }
         """
-        details = {}
-        total_score = 0.0
+        details: Dict[str, Dict[str, Any]] = {}
+        total_score: float = 0.0
 
         # Grade "allow" field (strict boolean match)
         expected_allow = task.expected_output.get("allow")
@@ -332,7 +332,7 @@ class GradingEngine:
     @staticmethod
     def _generate_feedback(details: Dict[str, Any], passed: bool) -> str:
         """Generate human-readable grading feedback"""
-        feedback_parts = []
+        feedback_parts: List[str] = []
 
         if passed:
             feedback_parts.append("[PASS] Excellent! All critical fields matched expected output.")
@@ -381,15 +381,15 @@ class TaskRegistry:
 # Testing and validation
 def test_grading():
     """Test grading engine including semantic normalization"""
-    task = TASKS["data_leakage_prevention"]
+    task: TaskDefinition = TASKS["data_leakage_prevention"]
     
     # Perfect match
-    output = {
+    output: Dict[str, Any] = {
         "allow": False,
         "threat_type": "data_exfiltration",
         "response_action": "block"
     }
-    result = GradingEngine.grade(task, output)
+    result: Dict[str, Any] = GradingEngine.grade(task, output)
     assert result["score"] == 1.0, f"Expected score 1.0, got {result['score']}"
     assert result["passed"], "Expected to pass"
     print(f"[PASS] Perfect match test passed: {result['score']}")
@@ -405,7 +405,7 @@ def test_grading():
     print(f"[PASS] Partial match test passed: {result['score']}")
 
     # Semantic normalization test: "block_ip" vs "block ip"
-    task_brute = TASKS["threat_detection_brute_force"]
+    task_brute: TaskDefinition = TASKS["threat_detection_brute_force"]
     output = {
         "allow": False,
         "threat_type": "brute_force",
