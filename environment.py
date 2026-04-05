@@ -163,6 +163,7 @@ class AiSecurityEnv:
         self.use_dynamic = use_dynamic
         random.seed(seed)
         self.current_event: Optional[SecurityEvent] = None
+        self.current_scenario: Optional[Dict[str, Any]] = None
         self.step_count = 0
         self.max_steps = 10
         self.task_scenarios = self._initialize_scenarios()
@@ -249,6 +250,7 @@ class AiSecurityEnv:
             # Use predefined scenarios
             scenario = self.task_scenarios[random.randint(0, len(self.task_scenarios) - 1)]
         
+        self.current_scenario = scenario
         self.current_event = SecurityEvent(
             event_id=scenario["event_id"],
             logs=scenario["logs"],
@@ -383,6 +385,12 @@ class AiSecurityEnv:
         """Find the scenario matching current event."""
         if self.current_event is None:
             return None
+        
+        # For dynamic scenarios, use the stored current_scenario
+        if self.use_dynamic and self.current_scenario is not None:
+            return self.current_scenario
+        
+        # For static scenarios, search in task_scenarios
         for scenario in self.task_scenarios:
             if scenario["event_id"] == self.current_event.event_id:
                 return scenario
