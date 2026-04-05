@@ -3,101 +3,53 @@ title: AI Security OpenEnv
 emoji: 🛡️
 colorFrom: blue
 colorTo: indigo
-sdk: docker
+sdk: gradio
 app_file: app.py
 pinned: false
 ---
 
-# AI Security Policy Enforcement & Firewall Optimization
+# Security OpenEnv
 
-An OpenEnv environment for evaluating AI agents on cybersecurity threat detection, policy enforcement, and firewall rule generation.
-
-**Status**: Research-grade evaluation environment with production-inspired design | **License**: MIT | **Python**: 3.8+ | **OpenEnv**: 1.0
-
-## 🚀 Quick Summary
-
-* Domain: Cybersecurity (SOC simulation)
-* Tasks: 4 (Easy: 1, Medium: 1, Hard: 2)
-* Evaluation: Deterministic + semantic grading
-* Baseline Performance: ~0.75 average score
-* Execution: python inference.py
-* Deployment: Docker-supported (CLI-based)
+AI cybersecurity threat detection and response evaluation environment.
 
 ## Overview
 
-This environment simulates a corporate security infrastructure where an AI agent must:
-- Analyze security logs and events
-- Classify threats (data exfiltration, brute-force attacks, intrusions)
-- Make allow/block decisions
-- Generate firewall rules dynamically
+Evaluate AI agents on security tasks:
+- **Task 1**: Data Leakage Prevention (Easy)
+- **Task 2**: Threat Detection (Medium)
+- **Task 3**: Advanced Threat Response (Hard)
 
-The environment provides **4 carefully designed tasks** (Easy: 1, Medium: 1, Hard: 2) with increasing complexity, deterministic grading enhanced with semantic normalization, and full OpenEnv API compliance for rigorous AI evaluation.
+## Features
 
-### Key Features
+- Clean Gradio interface
+- Real-time threat detection evaluation
+- JSON performance metrics
+- Hugging Face Spaces compatible
 
-✓ **OpenEnv Compliant**: Standard `reset()`, `step()`, and `state` API  
-✓ **Deterministic Grading**: Exact-match evaluation with reproducible scores  
-✓ **Partial Rewards**: Credit for partial correctness with weighted scoring  
-✓ **Docker Ready**: Production deployment via Docker + HuggingFace Spaces  
-✓ **Baseline Included**: Reference agent implementation (0.8+ success rate)  
-✓ **GitHub Ready**: Complete project structure for public repositories  
+## Running Locally
 
----
+```bash
+pip install -r requirements.txt
+python app.py
+```
 
-## Why This Matters: AI in Cybersecurity
+Visit `http://localhost:7860` in your browser.
 
-### Real-World Problem
+## Project Structure
 
-Cybersecurity operations centers (SOCs) face unprecedented challenges:
-- **Alert fatigue**: Thousands of alerts daily; analysts can only investigate a few
-- **Skill shortage**: SOCs need 450K+ more analysts globally (projected by 2025)
-- **Response delays**: Average incident response time: 200+ days
-- **Cost**: Security breaches average $4M+ in damages
+```
+.
+├── app.py           # Gradio UI
+├── inference.py     # Agent & evaluation
+├── environment.py   # Security environment
+├── tasks.py        # Task definitions
+└── requirements.txt # Dependencies
+```
 
-AI systems can help by:
-- **Automating threat triage**: Classify threats instantly, 24/7
-- **Reducing false positives**: Prevent alert fatigue with smarter detection
-- **Accelerating response**: Reduce investigation time from hours to minutes
-- **Extending expertise**: No human expert needed for initial assessment
+## License
 
-### Why Reproducible Evaluation Matters
+MIT
 
-Current challenge: **No standardized benchmark** for security AI systems
-- Each vendor evaluates differently (if they evaluate at all)
-- Hard to compare "AI System A vs B" fairly
-- Researchers can't reproduce published results
-- Organizations buy "black boxes" without understanding capability
-
-**This Environment Solves This By:**
-- Providing **standardized, reproducible** security scenarios
-- Ensuring **fair comparison** across different agents/models
-- Enabling **open research** with public benchmarks
-- Supporting **transparent evaluation** (exact scoring rules visible)
-
-### Real-World Deployment Implications
-
-Tests on this environment inform production decisions:
-
-| Metric | Baseline ~0.75–0.80 | Target 0.80-0.85 | Production Ready >0.85 |
-|--------|----------------|------------------|----------------------|
-| **Status** | Needs work | Good | Deployment ready |
-| **Usage** | Testing/POC | Staged rollout | Full production |
-| **Monitoring** | All decisions reviewed | 5-10% review | Spot checks |
-| **Human override** | Always required | Recommended | Not required |
-
-### SOC Automation ROI
-
-AI agents evaluated on this benchmark can provide:
-- **Cost reduction**: 30-50% fewer analysts needed for triage
-- **Speed improvement**: 10x faster initial threat classification
-- **Accuracy improvement**: Consistent policy application
-- **Coverage expansion**: 24/7 monitoring with no fatigue
-
----
-
-### Understanding the Scoring System
-
-The grading system is **deterministic** and **semantically robust**:
 
 #### Deterministic Scoring
 
