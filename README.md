@@ -417,8 +417,8 @@ curl -X POST http://localhost:8000/step \
 ```
 
 **Endpoints**:
-- `POST /reset` - Reset environment and get initial state
-- `POST /step` - Execute action and get environment response
+- `POST /reset` - Reset environment and return observation directly
+- `POST /step` - Execute action and return {observation, reward, done, info}
 - `GET /state` - Get current environment state
 - `GET /health` - Health check
 

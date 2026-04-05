@@ -14,10 +14,7 @@ def reset():
     """Reset the environment and return initial state."""
     try:
         state = env.reset()
-        return jsonify({
-            "status": "success",
-            "observation": state
-        })
+        return jsonify(state)
     except Exception as e:
         return jsonify({
             "status": "error",
@@ -39,7 +36,6 @@ def step():
         observation, reward, done, info = env.step(action)
 
         return jsonify({
-            "status": "success",
             "observation": observation,
             "reward": reward,
             "done": done,
